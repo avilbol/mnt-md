@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Script ANT para el empaquetamiento de la aplicacion
+Certificados para el Banco de Credito
+
+Autor: JCG
+Version. 1.0
+-->
+<project basedir="." default="build" name="montos">
+
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.5" />
+	<property name="source" value="1.5" />
+
+	<path id="Web App Libraries.libraryclasspath">
+
+		<pathelement location="WebContent/WEB-INF/classes" />
+	</path>          
+                
+	<path id="Bcr Libraries.libraryclasspath">
+	    <pathelement location="./lib/api.jar" />
+		<pathelement location="./lib/bcrauditlog.jar" />
+		<pathelement location="./lib/log4j-1.2.15.jar" />
+		<pathelement location="./lib/tecnoevolucion.jar" />
+	</path>	
+
+	<path id="montos.classpath">
+		<pathelement location="build/classes" />
+		<path refid="Web App Libraries.libraryclasspath" />
+		<path refid="Bcr Libraries.libraryclasspath" />  	
+	</path>
+
+	<target name="clean">
+		<echo message="${ant.project.name}: Borrado de directorio (classes)" />
+		<delete dir="WebContent/WEB-INF/classes" />
+	</target>
+
+	<target name="build-project">
+		<echo message="${ant.project.name}: Compilacion del proyecto" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="WebContent/WEB-INF/classes" source="${source}" target="${target}" encoding="ISO-8859-1">
+			<src path="./src" />
+			<classpath refid="montos.classpath" />
+		</javac>
+	</target>
+	
+	<target name="init">
+		<echo message="${ant.project.name}: Creacion de directorio (classes)" />
+		<mkdir dir="WebContent/WEB-INF/classes" />
+		<echo message="${ant.project.name}: Copia estructura de paquetes" />
+		<copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
+			<fileset dir="./build/classes" excludes="**/*.launch, **/*.java" />
+		</copy>
+	</target>
+
+
+	<target name="make-war">
+		<echo message="${ant.project.name}: Creacion de archivo WAR" />
+		<delete file="war/montos.war" />
+
+		<war destfile="war/montos.war" webxml="WebContent/WEB-INF/web.xml">
+			<manifest>
+				<attribute name="Company" value="Pangea Technologies S.A.S" />
+				<attribute name="Author" value="Mauricio Acosta" />
+				<attribute name="Date" value="14-12-2017" />
+			</manifest>
+			<fileset dir="./WebContent" />
+		</war>
+	</target>
+
+	<!-- Tarea principal -->
+	<target depends="clean,init,build-project,make-war" name="build" />
+
+
+
+</project>
